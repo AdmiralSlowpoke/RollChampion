@@ -2,12 +2,55 @@ const Discord = require('discord.js');
 const Canvas = require('canvas');
 const client = new Discord.Client();
 var auth = require('./auth.json');
-var key = "your lol api key";
-var champs1=["Азир","Акали","Алистар","Амуму","Анивия","Ари","Атрокс","Аурелион Сол","Бард","Блицкранк","Браум","Брэнд","Вай","Варвик","Варус","Вейгар","Вейн","Вел'Коз","Виктор","Владимир","Волибир","Вуконг","Галио","Гангпланк","Гарен","Гекарим","Гнар","Грагас","Грейвз","Дариус","Джакс","Джарван IV","Джейс","Джин","Джинкс","Диана","Доктор Мундо","Дрейвен","Жанна","Зайра","Зак","Зед","Зерат","Зиггс","Зилеан","Зои","Иверн","Иллаой","Ирелия","Йорик","Ка'Зикс","Каин","Кай'Са","Калиста","Камилла","Карма","Картус","Кассадин","Кассиопея","Катарина","Квинн","Кейл","Кейтлин","Кеннен","Киана","Киндред","Клед","Ког'Мао","Корки","Ксин Жао","Ле Блан","Леона","Ли Син","Лиссандра","Лулу","Люкс","Люциан","Мальзахар","Мальфит","Маокай","Мастер Йи","Мисс Фортуна","Моргана","Мордекайзер","Нами","Насус","Наутилус","Нидали","Нико","Ноктюрн","Нуну и Виллумп","Олаф","Орианна","Орн","Пайк","Пантеон","Поппи","Райз","Рамбл","Раммус","Рек'Сай","Ренгар","Ренектон","Ривен","Рэйкан","Сайлас","Свейн","Седжуанни","Сивир","Синджед","Синдра","Сион","Скарнер","Сона","Сорака","Таам Кенч","Талия","Талон","Тарик","Твистед Фэйт","Твич","Тимо","Трандл","Треш","Триндамир","Тристана","Удир","Ургот","Фиддлстикс","Физз","Фиора","Хеймердингер","Чо'Гат","Шако","Шая","Шен","Шивана","Эвелинн","Эзреаль","Экко","Элиза","Энни","Эш","Юми","Ясуо"];
-var champs2=["Azir","Akali","Alistar","Amumu","Anivia","Ahri","Aatrox","AurelionSol","Bard","Blitzcrank","Braum","Brand","Vi","Warwick","Varus","Veigar","Vayne","Velkoz","Viktor","Vladimir","Volibear","MonkeyKing","Galio","Gangplank","Garen","Hecarim","Gnar","Gragas","Graves","Darius","Jax","JarvanIV","Jayce","Jhin","Jinx","Diana","DrMundo","Draven","Janna","Zyra","Zac","Zed","Xerath","Ziggs","Zilean","Zoe","Ivern","Illaoi","Irelia","Yorick","Khazix","Kayn","Kaisa","Kalista","Camille","Karma","Karthus","Kassadin","Cassiopeia","Katarina","Quinn","Kayle","Caitlyn","Kennen","Qiyana","Kindred","Kled","KogMaw","Corki","XinZhao","Leblanc","Leona","LeeSin","Lissandra","Lulu","Lux","Lucian","Malzahar","Malphite","Maokai","MasterYi","MissFortune","Morgana","Mordekaiser","Nami","Nasus","Nautilus","Nidalee","Neeko","Nocturne","Nunu","Olaf","Orianna","Ornn","Pyke","Pantheon","Poppy","Ryze","Rumble","Rammus","RekSai","Rengar","Renekton","Riven","Rakan","Sylas","Swain","Sejuani","Sivir","Singed","Syndra","Sion","Skarner","Sona","Soraka","TahmKench","Taliyah","Talon","Taric","TwistedFate","Twitch","Teemo","Trundle","Thresh","Tryndamere","Tristana","Udyr","Urgot","Fiddlesticks","Fizz","Fiora","Heimerdinger","Chogath","Shaco","Xayah","Shen","Shyvana","Evelynn","Ezreal","Ekko","Elise","Annie","Ashe","Yuumi","Yasuo"];
+const ytdl = require('ytdl-core');
+const { search, streamURL } = require('iheart');
+var http = require('http');
+var fs = require('fs');
+const queue = new Map();
+var key = "lol-key";
+var champs1=["Азир","Акали","Алистар","Амуму","Анивия","Ари","Атрокс","Аурелион Сол","Бард","Блицкранк","Браум","Брэнд","Вай","Варвик","Варус","Вейгар","Вейн","Вел'Коз","Виктор","Владимир","Волибир","Вуконг","Галио","Гангпланк","Гарен","Гекарим","Гнар","Грагас","Грейвз","Дариус","Джакс","Джарван IV","Джейс","Джин","Джинкс","Диана","Доктор Мундо","Дрейвен","Жанна","Зайра","Зак","Зед","Зерат","Зиггс","Зилеан","Зои","Иверн","Иллаой","Ирелия","Йорик","Ка'Зикс","Каин","Кай'Са","Калиста","Камилла","Карма","Картус","Кассадин","Кассиопея","Катарина","Квинн","Кейл","Кейтлин","Кеннен","Киана","Киндред","Клед","Ког'Мао","Корки","Ксин Жао","Ле Блан","Леона","Ли Син","Лиссандра","Лулу","Люкс","Люциан","Мальзахар","Мальфит","Маокай","Мастер Йи","Мисс Фортуна","Моргана","Мордекайзер","Нами","Насус","Наутилус","Нидали","Нико","Ноктюрн","Нуну и Виллумп","Олаф","Орианна","Орн","Пайк","Пантеон","Поппи","Райз","Рамбл","Раммус","Рек'Сай","Ренгар","Ренектон","Ривен","Рэйкан","Сайлас","Свейн","Седжуанни","Сенна","Сивир","Синджед","Синдра","Сион","Скарнер","Сона","Сорака","Таам Кенч","Талия","Талон","Тарик","Твистед Фэйт","Твич","Тимо","Трандл","Треш","Триндамир","Тристана","Удир","Ургот","Фиддлстикс","Физз","Фиора","Хеймердингер","Чо'Гат","Шако","Шая","Шен","Шивана","Эвелинн","Эзреаль","Экко","Элиза","Энни","Эш","Юми","Ясуо"];
+var champs2=["Azir","Akali","Alistar","Amumu","Anivia","Ahri","Aatrox","AurelionSol","Bard","Blitzcrank","Braum","Brand","Vi","Warwick","Varus","Veigar","Vayne","Velkoz","Viktor","Vladimir","Volibear","MonkeyKing","Galio","Gangplank","Garen","Hecarim","Gnar","Gragas","Graves","Darius","Jax","JarvanIV","Jayce","Jhin","Jinx","Diana","DrMundo","Draven","Janna","Zyra","Zac","Zed","Xerath","Ziggs","Zilean","Zoe","Ivern","Illaoi","Irelia","Yorick","Khazix","Kayn","Kaisa","Kalista","Camille","Karma","Karthus","Kassadin","Cassiopeia","Katarina","Quinn","Kayle","Caitlyn","Kennen","Qiyana","Kindred","Kled","KogMaw","Corki","XinZhao","Leblanc","Leona","LeeSin","Lissandra","Lulu","Lux","Lucian","Malzahar","Malphite","Maokai","MasterYi","MissFortune","Morgana","Mordekaiser","Nami","Nasus","Nautilus","Nidalee","Neeko","Nocturne","Nunu","Olaf","Orianna","Ornn","Pyke","Pantheon","Poppy","Ryze","Rumble","Rammus","RekSai","Rengar","Renekton","Riven","Rakan","Sylas","Swain","Sejuani","Senna","Sivir","Singed","Syndra","Sion","Skarner","Sona","Soraka","TahmKench","Taliyah","Talon","Taric","TwistedFate","Twitch","Teemo","Trundle","Thresh","Tryndamere","Tristana","Udyr","Urgot","Fiddlesticks","Fizz","Fiora","Heimerdinger","Chogath","Shaco","Xayah","Shen","Shyvana","Evelynn","Ezreal","Ekko","Elise","Annie","Ashe","Yuumi","Yasuo"];
 const fetch = require("node-fetch");
+
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+	client.user.setActivity('расчленение человеков');
+});
+const tf=require('@tensorflow/tfjs');
+const LEARNING_RATE = 0.1;
+const EPOCHS = 200;
+
+// Define the training data
+const xs = [[0,0],[0,1],[1,0],[1,1]];
+const ys = [0,1,1,0];
+
+// Instantiate the training tensors
+let xTrain = tf.tensor2d(xs, [4,2]);
+let yTrain = tf.oneHot(tf.tensor1d(ys).toInt(), 2);
+
+// Define the model.
+const model = tf.sequential();
+// Set up the network layers
+model.add(tf.layers.dense({units: 5, activation: 'sigmoid', inputShape: [2]}));
+model.add(tf.layers.dense({units: 2, activation: 'softmax', outputShape: [2]}));
+// Define the optimizer
+const optimizer = tf.train.adam(LEARNING_RATE);
+// Init the model
+model.compile({
+    optimizer: optimizer,
+    loss: 'categoricalCrossentropy',
+    metrics: ['accuracy'],
+});
+// Train the model
+const history = model.fit(xTrain, yTrain, {
+  epochs: EPOCHS,
+  validationData: [xTrain, yTrain],
+}).then(()=>{
+  // Try the model on a value
+   const input = tf.tensor2d([0,1], [1, 2]);
+   const predictOut = model.predict(input);
+   const logits = Array.from(predictOut.dataSync());
+   console.log('prediction', logits, predictOut.argMax(-1).dataSync()[0]);
 });
 function ChIDToName(id)
 {
@@ -83,13 +126,14 @@ function ChIDToName(id)
     case 90: return "Мальзахар"; break;
     case 104: return "Грейвз"; break;
     case 254: return "Вай"; break;
+	case 235: return "Сенна"; break;
     case 10: return "Кейл"; break;
     case 39: return "Ирелия"; break;
     case 64: return "Ли Син"; break;
     case 420: return "Иллаой"; break;
     case 60: return "Элиза"; break;
     case 106: return "Волибир"; break;
-    case 20: return "Нуну"; break;
+    case 20: return "Нуну и Виллумп"; break;
     case 4: return "Твистед Фэйт"; break;
     case 24: return "Джакс"; break;
     case 102: return "Шивана"; break;
@@ -135,7 +179,7 @@ function ChIDToName(id)
     case 16: return "Сорака"; break;
     case 26: return "Зилеан"; break;
     case 56: return "Ноктюрн"; break;
-    case 222: return "Джикс"; break;
+    case 222: return "Джинкс"; break;
     case 83: return "Йорик"; break;
     case 6: return "Ургот"; break;
     case 203: return "Киндред"; break;
@@ -168,17 +212,87 @@ client.on('message', msg => {
 	const args = split.slice(1);
   if (msg.content === '*roll') {
 	var number= Math.random()*champs1.length;
-    msg.reply(champs1[Math.floor(number)], {files:["https://ddragon.leagueoflegends.com/cdn/9.15.1/img/champion/"+champs2[Math.floor(number)]+".png"]});
+    msg.reply(champs1[Math.floor(number)], {files:["https://ddragon.leagueoflegends.com/cdn/9.23.1/img/champion/"+champs2[Math.floor(number)]+".png"]});
   }
   if (msg.content.includes('*check')) {
-	  var name=(msg.content).slice(6,30);
-	fetch('https://ru.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+name+'?api_key='+key)
+	var page=(msg.content).slice(7,8);
+	var name=(msg.content).slice(9,33);
+	console.log(page);
+	console.log(name);
+	getchampid(page,name);
+  }
+  async function getchampid(page,name)
+  {
+	  name1=encodeURIComponent(name);
+	  console.log('https://ru.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+name1+'?api_key='+key);
+	  var matchid = await fetch('https://ru.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+name1+'?api_key='+key)
   .then(response => response.json())
   .then(commits =>
   fetch('https://ru.api.riotgames.com/lol/match/v4/matchlists/by-account/'+commits.accountId+'?api_key='+key)
   .then(response => response.json())
-  .then(commits =>msg.reply(name+' играл последнюю игру на '+ChIDToName(commits.matches[0].champion)))
   );
+  //console.log(championid.matches[0].champion);
+  let matches=[];
+  for(let i=0;i<5;i++)
+	matches.push(matchid.matches[i+((page-1)*5)].gameId);
+console.log(matches)
+let MatchInfo=[];
+for(let i=0;i<5;i++){
+	let a=await fetch('https://ru.api.riotgames.com/lol/match/v4/matches/'+matches[i]+'?api_key='+key).
+	then(response=>response.json());
+	for(let f=0;f<10;f++)
+	{
+		//console.log(a.participantIdentities[f].player.summonerName);
+		if(name.toLowerCase()===a.participantIdentities[f].player.summonerName.toLowerCase())
+		{
+			let champname=ChIDToName(a.participants[f].championId);
+			for(let z=0;z<champs1.length;z++)
+			{
+				if(champname===champs1[z])
+				{
+					champname=champs2[z];
+				}
+			}
+			MatchInfo.push(
+				{
+					ChampName:champname,
+					GameMode:a.gameMode,
+					Win:a.participants[f].stats.win,
+					Kills:a.participants[f].stats.kills,
+					Deaths:a.participants[f].stats.deaths,
+					Assists:a.participants[f].stats.assists
+				}
+			);
+		}
+	}
+	console.log('Чемпион:',MatchInfo[i].ChampName,'K/D/A:',MatchInfo[i].Kills,'/',MatchInfo[i].Deaths,'/',MatchInfo[i].Assists);
+	}
+	
+	const canvas = Canvas.createCanvas(500, 375);
+	const ctx = canvas.getContext('2d');
+	const background= await Canvas.loadImage('./background.png');
+	const lose=await Canvas.loadImage('./lose.png');
+	const high=await Canvas.loadImage('./high.png');
+	const pezdos=await Canvas.loadImage('./pezdos.png');
+	ctx.drawImage(background,0,0);
+	for(let i=0;i<5;i++){
+	let kda=((MatchInfo[i].Kills+MatchInfo[i].Assists)/MatchInfo[i].Deaths);
+	MatchInfo[i].Win==true?0:ctx.drawImage(lose, 0, i*75);
+	kda>8?ctx.drawImage(high, 0, i*75):0;
+	kda<=0.9?ctx.drawImage(pezdos, 0, i*75):0;
+	const avatar = await Canvas.loadImage("https://ddragon.leagueoflegends.com/cdn/9.23.1/img/champion/"+MatchInfo[i].ChampName+".png");
+	ctx.drawImage(avatar, 425, i*75,75,75);
+	ctx.font='25px sans-serif';
+	ctx.fillStyle = '#000000';
+	let ifwin=MatchInfo[i].Win==true?'Победа':'Поражение';
+	ctx.fillText((i+1).toString()+': '+MatchInfo[i].GameMode,5,(i*75)+50);
+	if(kda>0.9)
+	ctx.fillText('K/D/A: '+MatchInfo[i].Kills+'/'+MatchInfo[i].Deaths+'/'+MatchInfo[i].Assists,200,(i*75)+50);
+	else
+		ctx.fillText('НУ ПЕЗДОС',200,(i*75)+50);
+	}
+	const attachment = new Discord.Attachment(canvas.toBuffer(), 'check.png');
+	msg.channel.send(name,attachment);
   }
   if (msg.content === '*invade') {
     // Only try to join the sender's voice channel if they are in one themselves
@@ -193,9 +307,70 @@ client.on('message', msg => {
       msg.reply('You need to join a voice channel first!');
     }
   }
+  if (msg.content.includes('*rotation')) {
+  getrotation();
+  }
+   if (msg.content.includes('*pizdets')) {
+		var page=(msg.content).slice(9,60);
+	for(let i=0;i<10;i++)
+	{
+		msg.channel.send(page);
+	}
+  }
+  if(msg.content.includes('*say'))
+  {
+	  var slovo=(msg.content).slice(5,60);
+	  msg.delete(1000);
+	  client.channels.get('237175686903627777').send(slovo);
+  }
+  async function getrotation(){
+	var rotationid=await fetch('https://ru.api.riotgames.com/lol/platform/v3/champion-rotations'+'?api_key='+key)
+  .then(response => response.json());
+  var champions=[];
+  for(let i=0;i<15;i++)
+  {
+	  for(let f=0;f<champs1.length;f++)
+	  {
+		if(ChIDToName(rotationid.freeChampionIds[i])===champs1[f])
+		{
+			champions.push(champs2[f]);
+		}
+	  }
+  }
+ const canvas = Canvas.createCanvas(750, 450);
+	const ctx = canvas.getContext('2d');
+
+	for(let i=0;i<15;i++){
+	const avatar = await Canvas.loadImage("https://ddragon.leagueoflegends.com/cdn/9.23.1/img/champion/"+champions[i]+".png");
+	ctx.drawImage(avatar, (i%5)*150, parseInt((i/5))*150,150,150);
+	}
+	const attachment = new Discord.Attachment(canvas.toBuffer(), 'rotation.png');
+	const richember=new Discord.RichEmbed()
+	.setColor('#00FFFF')
+	.addField('Дорогой кожаный мешок','По имени '+`<@${msg.author.id}>`+' вот ротация этой недели: ')
+	.attachFile(attachment)
+	.setImage('attachment://rotation.png')
+	msg.channel.send(richember);
+  }
+  
    if (msg.content === 'комар') {
 	   client.channels.get('237175686903627777').send('<@!231080431771058176>');
   }
+  
+
+	if (msg.content.startsWith('*play')) {
+		const serverQueue = queue.get(msg.guild.id);
+		execute(msg, serverQueue);
+		return;
+	} else if (msg.content.startsWith('*skip')) {
+		const serverQueue = queue.get(msg.guild.id);
+		skip(msg, serverQueue);
+		return;
+	} else if (msg.content.startsWith('*stop')) {
+		const serverQueue = queue.get(msg.guild.id);
+		stop(msg, serverQueue);
+		return;
+	} 
   function getUserFromMention(mention) {
 	// The id is the first and only match found by the RegEx.
 	const matches = mention.match(/^<@!?(\d+)>$/);
@@ -240,8 +415,16 @@ client.on('message', msg => {
 	ctx.clip();
 	
 	// Clip off the region you drew on
-
-	const avatar = await Canvas.loadImage(user.avatarURL);
+	let avatar;
+	if(msg.content.includes('png')||msg.content.includes('jpg')||msg.content.includes('jpeg'))
+	{
+		let pngurl=(msg.content).slice(8, 200);
+		avatar = await Canvas.loadImage(pngurl);
+	}
+	else{
+		avatar = await Canvas.loadImage(user.avatarURL);
+	}
+	msg.delete(1000);
 	ctx.drawImage(avatar, 270, 280, 190, 190);
 	ctx.restore();
 	const background1 = await Canvas.loadImage('./hand.png');
@@ -257,7 +440,10 @@ client.on('message', msg => {
 	msg.channel.send(attachment);
 	  
   }
-
+	if(msg.content.includes('*math'))
+	{
+		msg.channel.send(1/0);
+	}
   if (msg.content.includes('*avatar')) {
 	  f();
 }
@@ -272,7 +458,29 @@ client.on('message', msg => {
         })
         .catch(console.log);
     } else {
-      msg.reply('You need to join a voice channel first!');
+      msg.reply('Зайди и включи');
+    }
+  }
+  if (msg.content.includes('*stream')) {
+	var name=(msg.content).slice(8,80);
+    playstream(name);
+  }
+  async function playstream(neurl)
+  {
+		const matches = await iheart.search(process.argv[2] || '1077 the bone')
+		const station = matches.stations[0]
+		const url = await iheart.streamURL(station)
+		console.log(url)
+	  if (msg.member.voiceChannel) {
+      msg.member.voiceChannel.join()
+        .then(connection => {	
+		console.log(stationURL);
+		  const dispatcher = connection.playStream(stationURL);
+		dispatcher.setVolume(0.5); 
+        })
+        .catch(console.log);
+    } else {
+      msg.reply('Зайди и включи');
     }
   }
   if(msg.content.includes('ЖОЖО'.toLowerCase()))
@@ -285,11 +493,96 @@ client.on('message', msg => {
         })
         .catch(console.log);
     } else {
-      msg.reply('You need to join a voice channel first!');
+      msg.reply('Зайди и включи');
     }
 	setTimeout(function(){
     msg.guild.me.voiceChannel.leave();
 }, 4000);
   }
 });
+async function execute(message, serverQueue) {
+	const args = message.content.split(' ');
+
+	const voiceChannel = message.member.voiceChannel;
+	if (!voiceChannel) return message.channel.send('Зайди и включи');
+	const permissions = voiceChannel.permissionsFor(message.client.user);
+	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
+		return message.channel.send('У МЕНЯ НЕТ РТА, НО Я ХОЧУ ОРАТЬ');
+	}
+	if(!(message.content.includes('https://www.yout')))
+	{
+		return message.channel.send('Только ссылки*');
+	}
+	const songInfo = await ytdl.getInfo(args[1]);
+	const song = {
+		title: songInfo.title,
+		url: songInfo.video_url,
+	};
+
+	if (!serverQueue) {
+		const queueContruct = {
+			textChannel: message.channel,
+			voiceChannel: voiceChannel,
+			connection: null,
+			songs: [],
+			volume: 5,
+			playing: true,
+		};
+
+		queue.set(message.guild.id, queueContruct);
+
+		queueContruct.songs.push(song);
+
+		try {
+			var connection = await voiceChannel.join();
+			queueContruct.connection = connection;
+			play(message.guild, queueContruct.songs[0]);
+			message.channel.send('Сейчас играет '+song.title);
+		} catch (err) {
+			console.log(err);
+			queue.delete(message.guild.id);
+			return message.channel.send(err);
+		}
+	} else {
+		serverQueue.songs.push(song);
+		console.log(serverQueue.songs);
+		return message.channel.send(song.title + ' добавлена в очередь');
+	}
+
+}
+
+function skip(message, serverQueue) {
+	if (!message.member.voiceChannel) return message.channel.send('В канал зайди и скипни');
+	if (!serverQueue) return message.channel.send('Скипать нечего');
+	serverQueue.connection.dispatcher.end();
+	message.channel.send('Скипнул');
+}
+
+function stop(message, serverQueue) {
+	if (!message.member.voiceChannel) return message.channel.send('В канал зайди и выключи');
+	serverQueue.songs = [];
+	serverQueue.connection.dispatcher.end();
+	message.channel.send('Стопнул');
+}
+
+function play(guild, song) {
+	const serverQueue = queue.get(guild.id);
+
+	if (!song) {
+		serverQueue.voiceChannel.leave();
+		queue.delete(guild.id);
+		return;
+	}
+
+	const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
+		.on('end', () => {
+			console.log('Music ended!');
+			serverQueue.songs.shift();
+			play(guild, serverQueue.songs[0]);
+		})
+		.on('error', error => {
+			console.error(error);
+		});
+	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+}
 client.login(auth.token);
